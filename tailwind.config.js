@@ -1,6 +1,6 @@
-
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class", // ✅ Enable dark mode with a .dark class
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -9,6 +9,7 @@ export default {
     extend: {
       fontFamily: {
         display: ['Inter', 'ui-sans-serif', 'system-ui'],
+        body: ['Inter', 'ui-sans-serif', 'system-ui'],
       },
       colors: {
         brand: {
@@ -23,9 +24,13 @@ export default {
           700: '#4338CA',
           800: '#3730A3',
           900: '#312E81',
-        }
-      }
+        },
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'), // ✅ nice for text content
+    require('@tailwindcss/forms'),      // ✅ styled form inputs
+    require('@tailwindcss/aspect-ratio') // ✅ responsive media
+  ],
 }

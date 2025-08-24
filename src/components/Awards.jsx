@@ -15,16 +15,20 @@ const items = [
   },
 ]
 
-export default function Certifications(){
+export default function Certifications() {
   return (
-    <SectionShell id="certifications" title="Certifications" subtitle="Credentials I’ve earned along my learning journey.">
+    <SectionShell 
+      id="certifications" 
+      title="Certifications" 
+      subtitle="Credentials I’ve earned along my learning journey."
+    >
       <div className="grid md:grid-cols-2 gap-6">
         {items.map((c, i) => (
           <article key={i} className="card">
             <h3 className="text-lg font-semibold">{c.title}</h3>
-            <p className="text-slate-300">{c.org}</p>
-            <p className="text-slate-400 text-sm">{c.year}</p>
-            <p className="mt-3 text-slate-300">{c.note}</p>
+            <p className="text-slate-700 dark:text-slate-300">{c.org}</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm">{c.year}</p>
+            <p className="mt-3 text-slate-700 dark:text-slate-300">{c.note}</p>
           </article>
         ))}
       </div>

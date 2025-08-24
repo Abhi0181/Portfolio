@@ -60,12 +60,12 @@ export default function Experience() {
           >
             <div className="flex-1">
               <h3 className="text-lg font-semibold">{exp.role}</h3>
-              <p className="text-slate-300">{exp.company}</p>
-              <p className="text-slate-400 text-sm">{exp.duration}</p>
-              <p className="text-slate-400 text-sm mt-1">
+              <p className="text-slate-700 dark:text-slate-300">{exp.company}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm">{exp.duration}</p>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
                 <span className="font-medium">Environment:</span> {exp.environment}
               </p>
-              <ul className="list-disc list-inside mt-3 space-y-1 text-slate-300">
+              <ul className="list-disc list-inside mt-3 space-y-1 text-slate-700 dark:text-slate-300">
                 {exp.desc.map((point, pi) => (
                   <li key={pi}>{point}</li>
                 ))}

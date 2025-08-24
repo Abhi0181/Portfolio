@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion'
 
 export default function SectionShell({ id, title, subtitle, children }){
@@ -13,7 +12,7 @@ export default function SectionShell({ id, title, subtitle, children }){
           className="mb-8"
         >
           <h2 className="section-heading">{title}</h2>
-          {subtitle && <p className="text-slate-300 mt-2">{subtitle}</p>}
+          {subtitle && <p className="mt-2 text-slate-700 dark:text-slate-300">{subtitle}</p>}
         </motion.div>
         <div className="grid gap-6">
           {children}
