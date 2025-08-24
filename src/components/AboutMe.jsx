@@ -27,7 +27,7 @@ export default function AboutMe() {
             Senior Software Engineer | ITX Developer
           </h2>
           <p className="text-lg text-slate-300 leading-relaxed">
-            ITX Developer with 4.5 years of experience in end-to-end enterprise data integration, specializing in IBM Transformation Extender (ITX) 
+            ITX Developer with 4.5 years of experience in end-to-end enterprise data integration, specializing in IBM Transformation Extender (ITX). 
             I enjoy solving complex data transformation challenges and contributing to scalable, high-performance systems.
           </p>
           <p className="italic text-slate-400">
@@ -35,15 +35,32 @@ export default function AboutMe() {
             becomes a force that transforms complexity into clarity."
           </p>
 
-          <div className="flex gap-3">
-            <a href="#projects" className="btn btn-primary">View Projects</a>
+          <div className="flex gap-3 flex-wrap">
+            <a href="#experience" className="btn btn-primary">View Experience</a>
             <a href="#contact" className="btn btn-outline">Contact Me</a>
-            <a href="/resume.pdf" className="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+            
+            {/* View Resume (opens in browser) */}
+           <a 
+            href="/Abhishek_Resume.pdf" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            type="application/pdf"
+            className="btn btn-secondary"
+          >
+            📄 View Resume
+          </a>
+
+            {/* Download Resume (direct download) */}
+            <a 
+              href="/Abhishek_Resume.pdf" 
+              download 
+              className="btn btn-secondary"
+            >
               Download Resume
             </a>
           </div>
 
-          <div className="flex gap-5 pt-4">
+          <div className="flex gap-5 pt-4 flex-wrap">
             <a
               href="mailto:abhishekkumara1910@gmail.com"
               className="text-indigo-400 hover:underline"

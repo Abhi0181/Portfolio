@@ -47,7 +47,7 @@ const data = {
     languages: ["English", "Hindi"]
   },
 
-  projects: [
+  Experience: [
     {
       title: "UNICA Data Integration (HCL Software)",
       description:
@@ -63,7 +63,7 @@ const data = {
     {
       title: "DHL Mapping & Migration (Encora)",
       description:
-        "Created and reviewed Mapping Specification Documents, built Type Trees, developed ITX maps, and executed migration projects for DHL systems.",
+        "Created and reviewed Mapping Specification Documents, built Type Trees, developed ITX maps, and executed migration Experience for DHL systems.",
       links: {}
     }
   ],
