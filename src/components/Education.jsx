@@ -32,9 +32,9 @@ export default function Education() {
         {items.map((it, i) => (
           <article key={i} className="card">
             <h3 className="text-xl font-semibold">{it.school}</h3>
-            <p className="text-slate-300">{it.degree}</p>
-            <p className="text-slate-400 text-sm">{it.year}</p>
-            <p className="mt-3 text-slate-300">{it.notes}</p>
+            <p className="text-gray-600 dark:text-slate-300">{it.degree}</p>
+            <p className="text-gray-500 dark:text-slate-400 text-sm">{it.year}</p>
+            <p className="mt-3 text-gray-700 dark:text-slate-300">{it.notes}</p>
           </article>
         ))}
       </div>
