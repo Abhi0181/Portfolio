@@ -1,19 +1,37 @@
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { useEffect, useRef, useState, useCallback } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useInView
+} from "framer-motion";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 
 export default function AboutMe() {
-  // Do not auto-open until the user has scrolled at least once
+  // Track that the user has scrolled at least once (prevents auto-open on first paint)
   const [hasScrolled, setHasScrolled] = useState(false);
 
-  // Allow manual toggle (tap/click). We intentionally REMOVE hover opening.
-  const [tapped, setTapped] = useState(false);
+  // Manual toggle (tap/click)
+  const [clickedOpen, setClickedOpen] = useState(false);
 
-  // Observe the text column
+  // Temporarily lock the panel closed while we animate the close before allowing page scroll
+  const [lockedClosed, setLockedClosed] = useState(false);
+
+  // Gate page scrolling for the duration of the closing animation
+  const [scrollGate, setScrollGate] = useState(false);
+
+  // Observe the text column for in-view logic
   const panelRef = useRef(null);
   const inView = useInView(panelRef, { amount: 0.6 });
 
-  // Close when the section is at the very top (under the header)
+  // Near the top of the viewport? (Close here when user scrolls up to the start.)
   const [nearStart, setNearStart] = useState(false);
+
+  const ANIM_MS = 600; // keep in sync with transition duration
 
   useEffect(() => {
     const onScroll = () => {
@@ -22,7 +40,7 @@ export default function AboutMe() {
       if (!el) return;
       const top = el.getBoundingClientRect().top;
 
-      // Tweak these to taste: treat ~0–100px from top as "start", keep closed there
+      // Treat ~0–100px from top as "start" (closed region)
       const START_BUFFER_TOP = -10;
       const START_BUFFER_BOTTOM = 100;
       setNearStart(top >= START_BUFFER_TOP && top <= START_BUFFER_BOTTOM);
@@ -37,24 +55,77 @@ export default function AboutMe() {
     };
   }, [hasScrolled]);
 
-  // Final open rule:
-  // - After first scroll: open when in view and not near the very top
-  // - Manual tap/click can also open while in view
-  const open = (hasScrolled && inView && !nearStart) || (tapped && inView);
+  // Derived "auto" open (after the user has scrolled at least once)
+  const autoOpen = useMemo(
+    () => hasScrolled && inView && !nearStart,
+    [hasScrolled, inView, nearStart]
+  );
 
-  const onToggleTap = useCallback(() => setTapped(v => !v), []);
+  // Final open state: not locked, and either manually opened or auto-open
+  const open = !lockedClosed && (clickedOpen || autoOpen);
+
+  // When wheel/gesture happens while open, close first, then allow page scroll
+  const handleWheel = useCallback(
+    (e) => {
+      if (!open) return; // nothing to intercept
+      // Prevent the page from moving while we close
+      e.preventDefault();
+      e.stopPropagation();
+
+      setLockedClosed(true);
+      setScrollGate(true);
+
+      // Release the lock after the animation completes
+      setTimeout(() => {
+        setLockedClosed(false);
+        setScrollGate(false);
+      }, ANIM_MS);
+    },
+    [open]
+  );
+
+  // Touch equivalent (mobile). When we want to block, we add touch-action: none.
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (!open) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      setLockedClosed(true);
+      setScrollGate(true);
+
+      setTimeout(() => {
+        setLockedClosed(false);
+        setScrollGate(false);
+      }, ANIM_MS);
+    },
+    [open]
+  );
+
+  // Click/tap toggles manual state (only meaningful while in view)
+  const toggleClick = useCallback(() => {
+    // If we're currently open because of autoOpen, toggle should close & lock (to feel snappy)
+    if (open) {
+      setLockedClosed(true);
+      setClickedOpen(false);
+      setTimeout(() => setLockedClosed(false), ANIM_MS);
+    } else {
+      setClickedOpen(true);
+    }
+  }, [open]);
+
   const onKeyToggle = useCallback((e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setTapped(v => !v);
+      toggleClick();
     }
-  }, []);
+  }, [toggleClick]);
 
   return (
-    // Add padding + scroll margin so it never hides under the fixed header
+    // Add padding + scroll margin so the section never hides under the fixed header
     <section id="about" className="section pt-24 md:pt-28 scroll-mt-28">
       <div className="section-inner grid md:grid-cols-2 gap-10 items-center">
-        {/* Classical portrait image (stays visible) */}
+        {/* Classical portrait image */}
         <motion.img
           src="/profile.jpg"
           alt="Abhishek Kumar Singh"
@@ -70,15 +141,20 @@ export default function AboutMe() {
           transition={{ duration: 0.6 }}
         />
 
-        {/* Text column: no hover open, only scroll + tap/click */}
+        {/* Text column */}
         <motion.div
           ref={panelRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ amount: 0.6 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="space-y-6 select-none cursor-pointer"
-          onClick={onToggleTap}
+          className={`
+            space-y-6 select-none
+            ${scrollGate ? "touch-none" : "cursor-pointer"}
+          `}
+          onWheel={handleWheel}
+          onTouchMove={scrollGate ? handleTouchMove : undefined}
+          onClick={toggleClick}
           onKeyDown={onKeyToggle}
           role="button"
           tabIndex={0}
@@ -93,7 +169,7 @@ export default function AboutMe() {
             </span>
           </h1>
 
-          {/* Smooth paper-fold reveal for details */}
+          {/* Smooth paper-fold reveal */}
           <AnimatePresence initial={false}>
             <motion.div
               key={open ? "open" : "closed"}
@@ -105,7 +181,7 @@ export default function AboutMe() {
                   : { opacity: 0, rotateX: -90, height: 0 }
               }
               exit={{ opacity: 0, rotateX: -90, height: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              transition={{ duration: ANIM_MS / 1000, ease: "easeOut" }}
               className="
                 origin-top overflow-hidden will-change-transform
                 rounded-2xl p-5 shadow-lg
